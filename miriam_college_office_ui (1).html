@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miriam College Office Directory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #e8eef3;
+            height: 100vh;
+            display: flex;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .left-panel {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: #4a90e2;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .office-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 15px;
+        }
+
+        .office-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .office-card.active {
+            border-color: #4a90e2;
+            background: #f0f7ff;
+        }
+
+        .office-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+
+        .office-info {
+            flex: 1;
+        }
+
+        .office-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .office-tagline {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .office-hours {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: #e8eef3;
+        }
+
+        .office-detail {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 900px;
+        }
+
+        .cover-photo {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        .profile-section {
+            padding: 0 40px;
+            margin-top: -50px;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            border: 5px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .office-header {
+            padding: 20px 40px 30px;
+        }
+
+        .office-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .office-slogan {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .operating-hours {
+            display: inline-block;
+            background: #f0f7ff;
+            color: #4a90e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .content-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 0 40px 40px;
+        }
+
+        .column {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .column h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .column p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 40px;
+            color: #999;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="I need assistance with...">
+            </div>
+            <div id="officeList"></div>
+        </div>
+
+        <div class="right-panel">
+            <div id="officeDetail">
+                <div class="empty-state">
+                    <h2>Select an Office</h2>
+                    <p>Click on any office from the left panel to view details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const offices = [
+            {
+                id: 1,
+                name: "Guidance and Counseling Office (GAO)",
+                tagline: "Redefining Resilience and Finding your Flow through Other",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                column1Title: "Need Immediate Assistance?",
+                column1Content: "If you need immediate assistance, kindly file a ticket using our CRMS and we will respond to your concern as soon as possible.",
+                column2Title: "More Information",
+                column2Content: "If you need information or details about how we operate, who we are and what we do, you may visit our page for more.",
+                tags: ["guidance", "counseling", "mental health", "student support", "wellness"]
+            },
+            {
+                id: 2,
+                name: "Registrar and Admissions Office (RAO)",
+                tagline: "Your Gateway to Academic Excellence",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                column1Title: "Enrollment Services",
+                column1Content: "We handle all enrollment-related concerns, registration, and academic records. File a ticket for assistance with enrollment, grades, or transcripts.",
+                column2Title: "Admissions Information",
+                column2Content: "Learn more about our admission requirements, application process, and available programs. Visit our page for detailed guidelines.",
+                tags: ["enrollment", "registration", "admissions", "grades", "transcripts", "academic records"]
+            },
+            {
+                id: 3,
+                name: "Office of Student Services and Affairs (OSSA)",
+                tagline: "Empowering Students, Building Community",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                column1Title: "Student Services",
+                column1Content: "We support student organizations, activities, and campus life. Contact us for student ID concerns, organization registration, and event planning.",
+                column2Title: "Campus Activities",
+                column2Content: "Stay updated with campus events, student programs, and community engagement opportunities. Join us in building a vibrant campus community.",
+                tags: ["student services", "student id", "organizations", "events", "campus life", "activities"]
+            },
+            {
+                id: 4,
+                name: "Language Learning Center (LLC)",
+                tagline: "Bridging Cultures Through Language",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                column1Title: "Language Programs",
+                column1Content: "We offer language learning resources, tutoring, and conversation practice. Book a session or inquire about our language programs.",
+                column2Title: "Learning Resources",
+                column2Content: "Access our multimedia language labs, online resources, and study materials. Explore our collection of language learning tools.",
+                tags: ["language", "tutoring", "learning", "study", "english", "foreign language"]
+            },
+            {
+                id: 5,
+                name: "Library and Information Services",
+                tagline: "Knowledge is Power, Information is Key",
+                hours: "Mon-Sat 7:00 AM - 8:00 PM",
+                coverColor: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+                column1Title: "Library Services",
+                column1Content: "Access our collection of books, journals, and digital resources. Inquire about borrowing, renewals, and research assistance.",
+                column2Title: "Research Support",
+                column2Content: "Our librarians provide research guidance, citation help, and database training. Schedule a consultation for your research needs.",
+                tags: ["library", "books", "research", "study", "resources", "database", "information"]
+            },
+            {
+                id: 6,
+                name: "Finance Office",
+                tagline: "Managing Resources, Enabling Dreams",
+                hours: "Mon-Fri 8:00 AM - 5:00 PM",
+                coverColor: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                column1Title: "Payment Services",
+                column1Content: "We handle tuition payments, financial assessments, and billing inquiries. Visit us for payment schedules and financial clearances.",
+                column2Title: "Financial Assistance",
+                column2Content: "Learn about scholarships, grants, and payment plans. Contact us to discuss financial aid options and requirements.",
+                tags: ["finance", "payment", "tuition", "billing", "scholarship", "financial aid", "cashier"]
+            },
+            {
+                id: 7,
+                name: "Information Technology Services (ITS)",
+                tagline: "Connecting You to Digital Excellence",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+                column1Title: "Technical Support",
+                column1Content: "Get help with your student portal, email, Wi-Fi access, and other technical issues. File a ticket for IT support.",
+                column2Title: "Digital Services",
+                column2Content: "Learn about our online platforms, learning management systems, and digital tools. We're here to support your digital learning experience.",
+                tags: ["IT", "technology", "technical support", "wifi", "email", "portal", "computer"]
+            },
+            {
+                id: 8,
+                name: "Health Services Office",
+                tagline: "Your Health, Our Priority",
+                hours: "Mon-Fri 8:00 AM - 5:00 PM",
+                coverColor: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                column1Title: "Medical Services",
+                column1Content: "We provide first aid, health consultations, and medical referrals. Visit us for health certificates and medical clearances.",
+                column2Title: "Health Programs",
+                column2Content: "Participate in our health and wellness programs, including health education, vaccination drives, and wellness activities.",
+                tags: ["health", "medical", "clinic", "nurse", "first aid", "wellness", "health certificate"]
+            },
+            {
+                id: 9,
+                name: "Scholarship Office",
+                tagline: "Investing in Your Future",
+                hours: "Mon-Fri 8:00 AM - 5:00 PM",
+                coverColor: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
+                column1Title: "Scholarship Applications",
+                column1Content: "Apply for scholarships and grants. We process scholarship applications, renewals, and provide guidance on eligibility requirements.",
+                column2Title: "Financial Support",
+                column2Content: "Explore various scholarship opportunities and financial assistance programs. Learn about application deadlines and requirements.",
+                tags: ["scholarship", "financial aid", "grants", "assistance", "discount", "enrollment"]
+            },
+            {
+                id: 10,
+                name: "Career Development Office",
+                tagline: "Preparing You for Tomorrow's Opportunities",
+                hours: "Mon-Fri 8:00 AM - 6:00 PM",
+                coverColor: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                column1Title: "Career Guidance",
+                column1Content: "Get career counseling, resume reviews, and interview preparation. We connect students with internship and job opportunities.",
+                column2Title: "Professional Development",
+                column2Content: "Attend our workshops, career fairs, and networking events. Build your professional skills and expand your career network.",
+                tags: ["career", "jobs", "internship", "employment", "ojt", "resume", "interview"]
+            }
+        ];
+
+        let selectedOfficeId = null;
+
+        function renderOfficeList(filteredOffices = offices) {
+            const officeList = document.getElementById('officeList');
+            
+            if (filteredOffices.length === 0) {
+                officeList.innerHTML = '<div class="no-results"><p>No offices found matching your search.</p></div>';
+                return;
+            }
+
+            officeList.innerHTML = filteredOffices.map(office => `
+                <div class="office-card ${selectedOfficeId === office.id ? 'active' : ''}" data-id="${office.id}">
+                    <div class="office-avatar"></div>
+                    <div class="office-info">
+                        <div class="office-name">${office.name}</div>
+                        <div class="office-tagline">${office.tagline}</div>
+                        <div class="office-hours">${office.hours}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.office-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const officeId = parseInt(this.getAttribute('data-id'));
+                    selectOffice(officeId);
+                });
+            });
+        }
+
+        function selectOffice(officeId) {
+            selectedOfficeId = officeId;
+            const office = offices.find(o => o.id === officeId);
+            
+            if (!office) return;
+
+            renderOfficeList(getCurrentFilteredOffices());
+
+            const detailHTML = `
+                <div class="office-detail">
+                    <div class="cover-photo" style="background: ${office.coverColor}"></div>
+                    <div class="profile-section">
+                        <div class="profile-avatar"></div>
+                    </div>
+                    <div class="office-header">
+                        <h1 class="office-title">${office.name}</h1>
+                        <p class="office-slogan">${office.tagline}</p>
+                        <span class="operating-hours">${office.hours}</span>
+                    </div>
+                    <div class="content-columns">
+                        <div class="column">
+                            <h3>${office.column1Title}</h3>
+                            <p>${office.column1Content}</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">File a Ticket</button>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <h3>${office.column2Title}</h3>
+                            <p>${office.column2Content}</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">View Page</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('officeDetail').innerHTML = detailHTML;
+        }
+
+        function getCurrentFilteredOffices() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!searchTerm) return offices;
+            
+            return offices.filter(office => 
+                office.name.toLowerCase().includes(searchTerm) ||
+                office.tagline.toLowerCase().includes(searchTerm) ||
+                office.tags.some(tag => tag.includes(searchTerm))
+            );
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filteredOffices = getCurrentFilteredOffices();
+            renderOfficeList(filteredOffices);
+        });
+
+        renderOfficeList();
+    </script>
+</body>
+</html>
